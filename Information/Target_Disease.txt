@@ -1,0 +1,502 @@
+Pituitary Tumors
+===================
+Acne
+===================
+Chronic Kidney Disease (CKD)
+===================
+Alzheimer's Disease
+===================
+Autoimmune Hepatitis
+===================
+Rosacea
+===================
+Coronary Artery Disease
+===================
+Pernicious Anemia
+===================
+Temporal Arteritis
+===================
+Meningitis
+===================
+Pulmonary Embolism
+===================
+Personality Disorders
+===================
+Intestinal Ischemia
+===================
+Gastroesophageal Reflux Disease (GERD)
+===================
+Chronic Kidney Disease
+===================
+Osteoporosis
+===================
+Bipolar Disorder
+===================
+Dissociative Identity Disorder (DID)
+===================
+Hypoparathyroidism
+===================
+Atherosclerosis
+===================
+Paget's Disease of Bone
+===================
+Fragile X Syndrome
+===================
+Tuberculosis
+===================
+Narcolepsy
+===================
+Polymyositis
+===================
+Hypertension
+===================
+Myasthenia Gravis
+===================
+Creutzfeldt-Jakob Disease
+===================
+Carpal Tunnel Syndrome
+===================
+Pneumonia
+===================
+Acute Kidney Injury (AKI)
+===================
+Squamous Cell Carcinoma
+===================
+Sarcoidosis
+===================
+Polycystic Ovary Syndrome (PCOS)
+===================
+Spinal Muscular Atrophy
+===================
+Stroke
+===================
+HIV/AIDS
+===================
+Eating Disorders
+===================
+Deep Vein Thrombosis (DVT)
+===================
+Rabies
+===================
+Scabies
+===================
+Anxiety Disorders
+===================
+Williams Syndrome
+===================
+Breast Cancer
+===================
+Cushing's Syndrome
+===================
+Tourette Syndrome
+===================
+Keratosis Pilaris
+===================
+Lupus
+===================
+Psoriasis
+===================
+Sickle Cell Anemia
+===================
+Diabetes Insipidus
+===================
+Arrhythmia
+===================
+Prader-Willi Syndrome
+===================
+Melanoma
+===================
+Anemia
+===================
+Ventricular Tachycardia
+===================
+Heart Disease
+===================
+Addison's Disease
+===================
+Fibromyalgia
+===================
+Urinary Tract Infection (UTI)
+===================
+West Nile Virus
+===================
+Aortic Aneurysm
+===================
+Trigeminal Neuralgia
+===================
+Congenital Heart Disease
+===================
+Esophageal Varices
+===================
+Spondyloarthritis
+===================
+Obsessive-Compulsive Disorder (OCD)
+===================
+Panic Disorder
+===================
+Polymyalgia Rheumatica
+===================
+Tendinitis
+===================
+Thyroid Cancer
+===================
+Interstitial Cystitis
+===================
+Ankylosing Spondylitis
+===================
+Giardiasis
+===================
+Multiple Sclerosis
+===================
+Hepatitis B
+===================
+Hypertrophic Cardiomyopathy
+===================
+Lyme Disease
+===================
+Amyotrophic Lateral Sclerosis (ALS)
+===================
+Social Anxiety Disorder
+===================
+Diverticulitis
+===================
+Emphysema
+===================
+Takayasu's Arteritis
+===================
+Pericarditis
+===================
+Bursitis
+===================
+Peripheral Neuropathy
+===================
+Hyperparathyroidism
+===================
+Leprosy (Hansen's Disease)
+===================
+Huntington's Disease
+===================
+Eczema
+===================
+Growth Hormone Deficiency
+===================
+Fibrodysplasia Ossificans Progressiva
+===================
+Down Syndrome
+===================
+Crohn's Disease
+===================
+Irritable Bowel Syndrome (IBS)
+===================
+Kidney Stones
+===================
+Congestive Heart Failure
+===================
+Kallmann Syndrome
+===================
+Lung Cancer
+===================
+Acute Respiratory Distress Syndrome (ARDS)
+===================
+Mesothelioma
+===================
+Diabetes Mellitus
+===================
+Laryngitis
+===================
+Heart Failure
+===================
+Rocky Mountain Spotted Fever
+===================
+Guillain-Barré Syndrome
+===================
+Mitral Valve Prolapse
+===================
+Rett Syndrome
+===================
+Osteogenesis Imperfecta
+===================
+Dystonia
+===================
+Muscular Dystrophy
+===================
+Hantavirus
+===================
+Barrett's Esophagus
+===================
+Conn's Syndrome
+===================
+Type 1 Diabetes
+===================
+Tetanus
+===================
+Tay-Sachs Disease
+===================
+Klinefelter Syndrome
+===================
+Epilepsy
+===================
+Cryptosporidiosis
+===================
+Atopic Dermatitis (Eczema)
+===================
+Chronic Obstructive Pulmonary Disease (COPD)
+===================
+Graves' Disease
+===================
+Hashimoto's Thyroiditis
+===================
+Measles
+===================
+Grave's Disease
+===================
+Pulmonary Fibrosis
+===================
+Hives (Urticaria)
+===================
+Gout
+===================
+Nephrotic Syndrome
+===================
+Pleurisy
+===================
+Osteomalacia
+===================
+Vitiligo
+===================
+Cerebral Palsy
+===================
+Turner Syndrome
+===================
+Botulism
+===================
+Wegener's Granulomatosis
+===================
+Angelman Syndrome
+===================
+Asthma
+===================
+Hyperthyroidism
+===================
+Dementia
+===================
+Endocarditis
+===================
+Major Depressive Disorder
+===================
+Autism Spectrum Disorder
+===================
+Seasonal Affective Disorder (SAD)
+===================
+Temporal Lobe Epilepsy
+===================
+Atrial Fibrillation
+===================
+West Syndrome
+===================
+Dermatomyositis
+===================
+Appendicitis
+===================
+Peripheral Artery Disease
+===================
+Triple X Syndrome
+===================
+Hypothyroidism
+===================
+Clostridium Difficile Colitis
+===================
+Syphilis
+===================
+Pancreatitis
+===================
+Sleep Apnea
+===================
+Influenza
+===================
+Yellow Fever
+===================
+Multiple Myeloma
+===================
+Hepatitis C
+===================
+Gastritis
+===================
+Albinism
+===================
+Alopecia Areata
+===================
+Chlamydia
+===================
+Adrenal Insufficiency
+===================
+Cholera
+===================
+Legionnaires' Disease
+===================
+Glomerulonephritis
+===================
+Angina
+===================
+Pancreatic Cancer
+===================
+Schizophrenia
+===================
+Migraine
+===================
+Rickets
+===================
+Lichen Planus
+===================
+Colorectal Cancer
+===================
+Scleroderma
+===================
+Celiac Disease
+===================
+Norovirus
+===================
+Cystic Fibrosis
+===================
+Sickle Cell Disease
+===================
+Ebola
+===================
+Pulmonary Edema
+===================
+Molluscum Contagiosum
+===================
+Leukemia
+===================
+Thalassemia
+===================
+Polycythemia Vera
+===================
+Sjögren's Syndrome
+===================
+Deep Vein Thrombosis
+===================
+Gonorrhea
+===================
+Cholecystitis (Gallbladder Inflammation)
+===================
+Ulcerative Colitis
+===================
+Bell's Palsy
+===================
+Zollinger-Ellison Syndrome
+===================
+Parkinson's Disease
+===================
+Generalized Anxiety Disorder (GAD)
+===================
+Hemophilia
+===================
+Rheumatoid Arthritis
+===================
+Hepatitis A
+===================
+Post-Traumatic Stress Disorder (PTSD)
+===================
+Pheochromocytoma
+===================
+Attention Deficit Hyperactivity Disorder (ADHD)
+===================
+Cardiomyopathy
+===================
+Lymphoma
+===================
+Asbestosis
+===================
+Ringworm (Tinea Corporis)
+===================
+Silicosis
+===================
+Autism Spectrum Disorder (ASD)
+===================
+Charcot-Marie-Tooth Disease
+===================
+Duchenne Muscular Dystrophy
+===================
+Marfan Syndrome
+===================
+Rubella (German Measles)
+===================
+Guillain-Barre Syndrome
+===================
+Varicella (Chickenpox)
+===================
+Peptic Ulcer Disease
+===================
+Systemic Lupus Erythematosus
+===================
+Shingles (Herpes Zoster)
+===================
+Brucellosis
+===================
+Goiter
+===================
+Anthrax
+===================
+Mumps
+===================
+Spina Bifida
+===================
+Seborrheic Dermatitis
+===================
+Hemochromatosis
+===================
+Zika Virus
+===================
+Gastroenteritis
+===================
+Schistosomiasis
+===================
+Polycystic Kidney Disease (PKD)
+===================
+Brain Aneurysm
+===================
+Peripheral Vascular Disease
+===================
+Gallstones
+===================
+Basal Cell Carcinoma
+===================
+Prostate Cancer
+===================
+Trichomoniasis
+===================
+Pulmonary Hypertension
+===================
+Impetigo
+===================
+Bladder Cancer
+===================
+Lactose Intolerance
+===================
+McCune-Albright Syndrome
+===================
+Osteoarthritis
+===================
+Pertussis (Whooping Cough)
+===================
+Ovarian Cancer
+===================
+Kyphosis
+===================
+Pneumothorax
+===================
+COVID-19
+===================
+Malaria
+===================
+Noonan Syndrome
+===================
+Phenylketonuria (PKU)
+===================
+Scoliosis
+===================
+Dengue Fever
+===================
+Acromegaly
+===================
