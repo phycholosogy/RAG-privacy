@@ -1,16 +1,51 @@
-# Environmental installation
+# RAG-privacy
 
-The model we mainly use is llama, you should install `llama` first by the instruction of https://github.com/facebookresearch/llama.
+Our paper is available at [The Good and The Bad: Exploring Privacy Issues in Retrieval-Augmented Generation (RAG)](https://arxiv.org/abs/2402.16893).
 
-The main packages we use is:
+## Abstract
+
+Retrieval-augmented generation (RAG) is a powerful technique to facilitate language model with proprietary and private data, where data privacy is a pivotal concern. Whereas extensive research has demonstrated the privacy risks of large language models (LLMs), the RAG technique could potentially reshape the inherent behaviors of LLM generation, posing new privacy issues that are currently under-explored. In this work, we conduct extensive empirical studies with novel attack methods, which demonstrate the vulnerability of RAG systems on leaking the private retrieval database. Despite the new risk brought by RAG on the retrieval data, we further reveal that RAG can mitigate the leakage of the LLMs' training data. Overall, we provide new insights in this paper for privacy protection of retrieval-augmented LLMs, which benefit both LLMs and RAG systems builders.
+
+## Environmental installation
+
+First, I suggest manually installing GPU-related libraries, selecting the version that is compatible with your CUDA version. You can find the compatible version at [torch install guide](https://pytorch.org/).
 
 ```
-torch langchain langchain_community langchain_openai FlagEmbedding openai chromadb chardet fire
+pip3 install torch torchvision torchaudio
 ```
 
-More details can be found in the `environment.yml` file located in the folder.
+Then, following [Llama 2 install guide](https://github.com/facebookresearch/llama?tab=readme-ov-file#quick-start) to install Llama 2. **Note** that you should download the models (including the file `tokenizer.model` and the folder that store the parameters of the Llama) in folder  `.\Model`. For example, you may have the following file structure.
 
-# Structure of the files
+```
+|-- Model
+    |-- tokenizer.model
+    |-- llama-2-7b-chat
+    |   |-- checklist.chk
+    |   |-- consolidated.00.pth
+    |   |-- params.json
+    |-- llama-2-13b-chat
+    |   |-- checklist.chk
+    |   |-- consolidated.00.pth
+    |   |-- consolidated.01.pth
+    |   |-- params.json
+```
+
+Finally, to install other required packages, you can use one of the following methods
+
+Install from the `requirements.txt` file:
+
+```
+pip install -r requirements.txt
+```
+
+or install the specific packages individually:
+
+```
+pip install langchain langchain_community sentence_transformers FlagEmbedding chromadb chardet nltk
+```
+
+
+## Structure of the files
 
 The directory and structure of the files are as follows:
 
@@ -42,9 +77,9 @@ The directory and structure of the files are as follows:
   * run_language_model.py: run the LLM model and generate the results
   * evaluation_results.py: evaluate the results
 
-# Examples and illustrate
+## Examples and illustrate
 
-## retrieval_database.py
+### retrieval_database.py
 
 It contains utilitys, these are internal calls between functions, you can skip these functions:
 1. find_all_file: find all files in folder f'{path}'
@@ -167,7 +202,7 @@ You can run this file by:
 Python retrieval_database.py
 ```
 
-## generate_prompt.py
+### generate_prompt.py
 
 This file is to get the prompt that transferred to the LLM.
 It contains functions:
@@ -304,7 +339,7 @@ You can run this file by:
 python generate_prompt.py
 ```
 
-## run_language_model.py
+### run_language_model.py
 
 An executable file named "{experiment_name}.sh" will be generated. You can run it by running the file in Part 3.2, you can run the model by running the file:
 
@@ -329,7 +364,7 @@ The parameter is:
         max_batch_size (int): The maximum batch size for generating sequences. Defaults to 1.
 ```
 
-## evaluation_results.py
+### evaluation_results.py
 
 This file is to evaluate the results of the experiment.
 The main evaluation is 4 parts: retrieval step evaluation, target attack evaluation and untarget attack evaluation
