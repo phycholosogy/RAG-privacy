@@ -44,6 +44,20 @@ or install the specific packages individually:
 pip install langchain langchain_community sentence_transformers FlagEmbedding chromadb chardet nltk
 ```
 
+## About the data
+
+You can find our pre-processed dataset via the [google drive link](https://drive.google.com/drive/folders/1zdAilQPhLqmw9wzv7hNn7JkewHAInjkZ?usp=sharing).
+
+Please unzip the datasets to the `.\Data` folder, you may find the following file structure.
+
+```
+|-- Data
+    |-- chatdoctor
+    |-- enron-mail
+    |-- wikitext-103
+```
+
+You can also find the origin datasets here: [chatdoctor](https://huggingface.co/datasets/LinhDuong/chatdoctor-200k), [wikitext-103-raw-v1](https://huggingface.co/datasets/wikitext) and [enron-mail](https://www.cs.cmu.edu/~enron/).
 
 ## Structure of the files
 
