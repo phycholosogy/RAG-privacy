@@ -1,13 +1,11 @@
 """
 This file is the code about retrieval database part.
-In this file, we support functions to build a retrieval database, and provide function to load the database.
-It contains utilitys, these are internal calls between functions, you can skip these functions:
-1. find_all_file: find all files in folder f'{path}'
-2. get_encoding_of_file: get the encoding of the file
-3. get_embed_model: get the embedding model
+In this file, we support functions to build a vector database for retrieval, and provide function to load the database.
 It contains following functions:
 1. pre_process_dataset:
     pre precess the dataset for construction of retrieval database
+2. split_dataset:
+    split the dataset to the train set and test set
 2. construct_retrieval_database:
     construct a retrieval database
 3. load_retrieval_database_from_address
@@ -16,8 +14,18 @@ It contains following functions:
     load a pre-built retrieval database based on the database name and construct method.
     if you use the construct_retrieval_database to build a retrieval database,
     this function will help you access the database clearer
+It contains utilitys, these are internal calls between functions, you can skip these functions:
+1. find_all_file: find all files in folder f'{path}'
+2. get_encoding_of_file: get the encoding of the file
+3. get_embed_model: get the embedding model
 """
+import os
 import random
+import shutil
+import json
+import argparse
+from typing import List
+from chardet.universaldetector import UniversalDetector
 
 import torch
 import langchain
@@ -26,13 +34,16 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import TextSplitter, RecursiveCharacterTextSplitter
-from typing import List
-import os
-from chardet.universaldetector import UniversalDetector
-import json
 
 
 def find_all_file(path: str) -> List[str]:
+    """
+    return the list of all files of a folder
+    :param:
+        path: the path of the folder
+    :return:
+        A list containing the paths of all files in the folder
+    """
     for root, ds, fs in os.walk(path):
         for f in fs:
             fullname = os.path.join(root, f)
@@ -40,6 +51,9 @@ def find_all_file(path: str) -> List[str]:
 
 
 def get_encoding_of_file(path: str) -> str:
+    """
+    return the encoding of a file
+    """
     detector = UniversalDetector()
     with open(path, 'rb') as file:
         data = file.readlines()
@@ -56,14 +70,18 @@ def get_embed_model(encoder_model_name: str,
                     retrival_database_batch_size: int = 256) -> OpenAIEmbeddings:
     """
     get embedding model
-    :param
-        encoder_model_name: name of encoder model
+    You can also code for other embedding model
+    :param:
+        encoder_model_name: name of encoder model. Options:
+            open-ai: OpenAI Embeddings
+            all-MiniLM-L6-v2: default Embedding method
+            bge-large-en-v1.5: bge-large-en-v1.5 from BAAI
+            e5-base-v2： e5-base-v2 from intfloat
         device: cpu or gpu if available
         retrival_database_batch_size: batch size
     :return:
-        embedding model
+        the embedding model
     """
-    embed_model = None
     if encoder_model_name == 'open-ai':
         embed_model = OpenAIEmbeddings()
     elif encoder_model_name == 'all-MiniLM-L6-v2':
@@ -84,6 +102,15 @@ def get_embed_model(encoder_model_name: str,
             model_kwargs={'device': device},
             encode_kwargs={'device': device, 'batch_size': retrival_database_batch_size}
         )
+    else:
+        try:
+            embed_model = HuggingFaceEmbeddings(
+                model_name=encoder_model_name,
+                model_kwargs={'device': device},
+                encode_kwargs={'device': device, 'batch_size': retrival_database_batch_size},
+            )
+        except encoder_model_name:
+            raise Exception(f"Encoder {encoder_model_name} not found, please check.")
     return embed_model
 
 
@@ -104,9 +131,11 @@ def pre_process_dataset(data_name: str, change_method: str = 'body') -> None:
     data_store_path = 'Data'
 
     def pre_process_chatdoctor() -> None:
-        # delete the instruction, the instruction is fixed as following:
-        # "If you are a doctor, please answer the medical questions based on the patient's description."
-        # In a retrieval dataset, the instruction is in no need.
+        """
+        delete the instruction, the instruction is fixed as following:
+            "If you are a doctor, please answer the medical questions based on the patient's description."
+        In a retrieval dataset, the instruction is in no need.
+        """
         file_path = os.path.join(data_store_path, 'chatdoctor200k/chatdoctor200k.json')
         with open(file_path, 'r') as f:
             content = f.read()
@@ -123,21 +152,8 @@ def pre_process_dataset(data_name: str, change_method: str = 'body') -> None:
                 f.write(s)
         print(f'Number of chatdoctor dataset is {len(data)}')  # 207408
         print(f'Max length of chatdoctor dataset is {max_len}')  # 11772
-        with open('Data/chatdoctor/chatdoctor.txt', 'r', encoding="utf-8") as f:
-            data = f.read()
-        data = data.split('\n\n')
-        output_train_path = os.path.join(data_store_path, 'chatdoctor-train/chatdoctor.txt')
-        output_test_path = os.path.join(data_store_path, 'chatdoctor-test/chatdoctor.txt')
-        ratio_ = 0.9
-        num_ = int(ratio_ * len(data))
-        random.shuffle(data)
-        with open(output_train_path, 'w', encoding="utf-8") as f:
-            f.write('\n\n'.join(data[:num_]))
-        with open(output_test_path, 'w', encoding="utf-8") as f:
-            f.write('\n\n'.join(data[num_:]))
 
     def pre_process_enron_mail() -> None:
-
         num_file = 0
         data_path = os.path.join(data_store_path, data_name)
         for file_name in find_all_file(data_path):
@@ -182,6 +198,58 @@ def pre_process_dataset(data_name: str, change_method: str = 'body') -> None:
         pre_process_enron_mail()
 
 
+def split_dataset(data_name: str, split_ratio: int = 0.99) -> None:
+    """
+    split the dataset to the train set and the test set
+    :param:
+        data_name: name of the dataset
+        split_ratio: ratio of the train set
+    the train-set and the test-set will be stored at folder {data_name}-train and {data_name}-test
+    """
+    data_store_path = 'Data'
+    if data_name == 'chatdoctor':
+        with open('Data/chatdoctor/chatdoctor.txt', 'r', encoding="utf-8") as f:
+            data = f.read()
+        data = data.split('\n\n')
+        output_train_path = os.path.join(data_store_path, 'chatdoctor-train/chatdoctor.txt')
+        output_test_path = os.path.join(data_store_path, 'chatdoctor-test/chatdoctor.txt')
+        num_ = int(split_ratio * len(data))
+        random.shuffle(data)
+        with open(output_train_path, 'w', encoding="utf-8") as f:
+            f.write('\n\n'.join(data[:num_]))
+        with open(output_test_path, 'w', encoding="utf-8") as f:
+            f.write('\n\n'.join(data[num_:]))
+    else:
+        """
+        If a dataset is stored in multiple files, and you only want to partition the dataset at the file level
+        You can use this code directly
+        Alternatively, you can modify this section of the code according to your specific requirements.
+        """
+        data_path = os.path.join(data_store_path, data_name)
+        all_file = []
+        for file_name in find_all_file(data_path):
+            all_file.append(file_name)
+        random.shuffle(all_file)
+        num_train = int(len(all_file) * split_ratio)
+        train_all_file = all_file[:num_train]
+        test_all_file = all_file[num_train:]
+        print(f'Number of the training set is {len(train_all_file)}, number of the test set is {len(test_all_file)}')
+        for train_file in train_all_file:
+            source_file = train_file    # source path
+            target_file = train_file.replace(data_name, f'{data_name}-train')
+            if not os.path.exists(os.path.dirname(target_file)):
+                os.makedirs(os.path.dirname(target_file))
+            # using shutil to copy file
+            shutil.copy2(source_file, target_file)
+
+        for test_file in test_all_file:
+            source_file = test_file    # source path
+            target_file = test_file.replace(data_name, f'{data_name}-test')
+            if not os.path.exists(os.path.dirname(target_file)):
+                os.makedirs(os.path.dirname(target_file))
+            shutil.copy2(source_file, target_file)
+
+
 def construct_retrieval_database(data_name_list: List[str],
                                  split_method: List[str] = None,
                                  encoder_model_name: str = 'all-MiniLM-L6-v2',
@@ -194,6 +262,8 @@ def construct_retrieval_database(data_name_list: List[str],
     :param
     `   data_name_list: The name of the datasets. The datasets are placed in f'./Data/{data_name}'
             optional: ['enron-mail', 'chatdoctor', 'wikitext-103']
+            If you run pre_process_dataset, you can also use: 'enron-mail-body', 'enron-mail-strip'
+            If you run split_dataset, you can also use: f'{data_name}-train' and f'{data_name}-test'
         split_method: The method to split the data. Each dataset should be provided a split method.
                       The len of the list should be 1 or len(data_name_list) or None
             optional: ['single_file', 'by_two_line_breaks', 'recursive_character']
@@ -209,11 +279,10 @@ def construct_retrieval_database(data_name_list: List[str],
     :return
         A dataset with a retrieval database, the type is langchain.vectorstores.chroma.Chroma
     :function
-        get_splitter: get tbe splitter
+        get_splitter: get the splitter
     :class
         SingleFileSplitter: constructs a splitter object that splits each file as a chunk
-    :important note
-        In this code, the data is placed in the Data folder, each dataset is individually placed in a sub folder
+        LineBreakTextSplitter: constructs a splitter object that splits the data by '\n\n'
     """
 
     class SingleFileSplitter(TextSplitter):
@@ -268,6 +337,7 @@ def construct_retrieval_database(data_name_list: List[str],
     if len(data_name_list) != 1:
         retrieval_name = 'mix_' + retrieval_name
     vector_store_path = f"./RetrievalBase/{retrieval_name}/{encoder_model_name}"
+    print(f'generating chroma database of {retrieval_name} using {encoder_model_name}')
     retrieval_database = Chroma.from_documents(documents=split_texts,
                                                embedding=embed_model,
                                                persist_directory=vector_store_path)
@@ -276,7 +346,7 @@ def construct_retrieval_database(data_name_list: List[str],
 
 def load_retrieval_database_from_address(store_path: str,
                                          encoder_model_name: str = 'all-MiniLM-L6-v2',
-                                         retrival_database_batch_size: int = 256
+                                         retrival_database_batch_size: int = 512
                                          ) -> 'langchain.vectorstores.chroma.Chroma':
     """
     Load pre-built retrieval database
@@ -302,7 +372,7 @@ def load_retrieval_database_from_address(store_path: str,
 
 def load_retrieval_database_from_parameter(data_name_list: List[str],
                                            encoder_model_name: str = 'all-MiniLM-L6-v2',
-                                           retrival_database_batch_size: int = 256
+                                           retrival_database_batch_size: int = 512
                                            ) -> 'langchain.vectorstores.chroma.Chroma':
     """
     Load the database by some parameters, in this function, it is clearer
@@ -333,43 +403,55 @@ def load_retrieval_database_from_parameter(data_name_list: List[str],
 
 
 if __name__ == '__main__':
-    # set the GPU should be front of import torch
-    os.environ["CUDA_VISIBLE_DEVICES"] = "6"
-    # precess data
-    # pre_process_dataset('chatdoctor200k')             # num of dataset is 207408
-    # pre_process_dataset('enron-mail', 'body')         # num of dataset is 515437
-    # pre_process_dataset('enron-mail', 'strip')        # num of dataset is 517401
-
-    # construct database
-    # bge
-    # construct_retrieval_database(['enron-mail'], ['single_file'], 'bge-large-en-v1.5', 256)
-    # print('finish mail')
-    # construct_retrieval_database(['chatdoctor'], ['by_two_line_breaks'], 'bge-large-en-v1.5', 256)
-    # print('finish chat')
-    # construct_retrieval_database(['enron-mail-body'], ['single_file'], 'bge-large-en-v1.5', 256)
-    # print('finish body')
-    # # # construct mix data database
-    # construct_retrieval_database(['enron-mail', 'wikitext-103'], ['single_file', 'recursive_character'],
-    #                              'bge-large-en-v1.5', 256)
-    # print('finish mix')
-    # # e5
-    # construct_retrieval_database(['enron-mail'], ['single_file'], 'e5-base-v2', 256)
-    # print('finish mail')
-    # construct_retrieval_database(['chatdoctor'], ['by_two_line_breaks'], 'e5-base-v2', 256)
-    # print('finish chat')
-    # construct_retrieval_database(['enron-mail-body'], ['single_file'], 'e5-base-v2', 256)
-    # print('finish body')
-    # # # construct mix data database
-    # construct_retrieval_database(['enron-mail', 'wikitext-103'], ['single_file', 'recursive_character'],
-    #                              'e5-base-v2', 256)
-
-    # # sentence transformer
-    construct_retrieval_database(['enron-mail'], ['single_file'], 'all-MiniLM-L6-v2', 512)
-    print('finish mail')
-    construct_retrieval_database(['chatdoctor'], ['by_two_line_breaks'], 'all-MiniLM-L6-v2', 512)
-    print('finish chat')
-    construct_retrieval_database(['enron-mail-body'], ['single_file'], 'all-MiniLM-L6-v2', 512)
-    print('finish body')
-    # # construct mix data database
+    """
+    You can run following example code to do your experiments, or directly parse parameters
+    
+    # Step 1: preprocessing the data
+    # We have provided the processed data, so you don't need to execute this code.
+    # pre_process_dataset('chatdoctor200k')           # num of dataset is 207408
+    # run this code to edit the enron-mail data
+    pre_process_dataset('enron-mail', 'body')         # num of dataset is 515437
+    pre_process_dataset('enron-mail', 'strip')        # num of dataset is 517401
+    # split the dataset to train and test if needed
+    split_dataset('enron-mail')
+    split_dataset('chatdoctor')
+    
+    # Step 2: Building the vector database
+    construct_retrieval_database(['chatdoctor'], ['by_two_line_breaks'], 'bge-large-en-v1.5')    # building chatdoctor
+    construct_retrieval_database(['enron-mail'], ['by_two_line_breaks'], 'bge-large-en-v1.5')    # building enron-mail
     construct_retrieval_database(['enron-mail', 'wikitext-103'], ['single_file', 'recursive_character'],
-                                 'all-MiniLM-L6-v2', 512)
+                                 'bge-large-en-v1.5')    # build mix dataset
+    construct_retrieval_database(['chatdoctor-train'], ['by_two_line_breaks'], 'bge-large-en-v1.5') # building train set
+    # For more details, please read the explanatory note of the function construct_retrieval_database
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dataset_name', type=str)
+    parser.add_argument('--encoder_model', type=str)
+    parser.add_argument('--flag_mix', type=bool, default=False)
+    args = parser.parse_args()
+    dataset_name = args.dataset_name
+    encoder_model = args.encoder_model
+    flag_mix = args.flag_mix
+
+    if dataset_name.find('body') != -1 and not os.path.exists('Data/enron-mail-body'):
+        pre_process_dataset('enron-mail', 'body')
+    if dataset_name.find('strip') != -1 and not os.path.exists('Data/enron-mail-strip'):
+        pre_process_dataset('enron-mail', 'strip')
+    if dataset_name.find('train') != -1 and not os.path.exists(f'Data/{dataset_name}'):
+        split_dataset(dataset_name)
+    if dataset_name.find('test') != -1 and not os.path.exists(f'Data/{dataset_name}'):
+        split_dataset(dataset_name)
+    if flag_mix is True:
+        if dataset_name.find('enron-mail') != -1:
+            construct_retrieval_database([dataset_name, 'wikitext-103'],
+                                         ['single_file', 'recursive_character'],
+                                         encoder_model)
+        elif dataset_name.find('chatdoctor') != -1:
+            construct_retrieval_database([dataset_name, 'wikitext-103'],
+                                         ['by_two_line_breaks', 'recursive_character'],
+                                         encoder_model)
+    else:
+        if dataset_name.find('enron-mail') != -1:
+            construct_retrieval_database([dataset_name], ['single_file'], encoder_model)
+        elif dataset_name.find('chatdoctor') != -1:
+            construct_retrieval_database([dataset_name], ['by_two_line_breaks'], encoder_model)
