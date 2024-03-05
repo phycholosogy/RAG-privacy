@@ -34,6 +34,7 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import TextSplitter, RecursiveCharacterTextSplitter
+from nltk.tokenize import RegexpTokenizer
 
 
 def find_all_file(path: str) -> List[str]:
@@ -198,12 +199,14 @@ def pre_process_dataset(data_name: str, change_method: str = 'body') -> None:
         pre_process_enron_mail()
 
 
-def split_dataset(data_name: str, split_ratio: int = 0.99) -> None:
+def split_dataset(data_name: str, split_ratio: int = 0.99, num_eval: int = 1000, max_que_len: int = 50) -> None:
     """
     split the dataset to the train set and the test set
     :param:
         data_name: name of the dataset
         split_ratio: ratio of the train set
+        num_eval: the number of samples from test sets to evaluate the performance
+        max_que_len: max length of the input of the evaluation for enron-mail
     the train-set and the test-set will be stored at folder {data_name}-train and {data_name}-test
     """
     data_store_path = 'Data'
@@ -219,6 +222,20 @@ def split_dataset(data_name: str, split_ratio: int = 0.99) -> None:
             f.write('\n\n'.join(data[:num_]))
         with open(output_test_path, 'w', encoding="utf-8") as f:
             f.write('\n\n'.join(data[num_:]))
+        # getting information of performance evaluation
+        test_data = data[num_:]
+        random.shuffle(test_data)
+        eval_data = test_data[:num_eval]
+        eval_input = []
+        eval_output = []
+        for e_data in eval_data:
+            item = e_data.split('\noutput: ')
+            eval_input.append(item[0][7:])
+            eval_output.append(item[1])
+        with open(f'Data/{data_name}-test/eval_input.json', 'w', encoding='utf-8') as file:
+            file.write(json.dumps(eval_input))
+        with open(f'Data/{data_name}-test/eval_output.json', 'w', encoding='utf-8') as file:
+            file.write(json.dumps(eval_output))
     else:
         """
         If a dataset is stored in multiple files, and you only want to partition the dataset at the file level
@@ -248,6 +265,19 @@ def split_dataset(data_name: str, split_ratio: int = 0.99) -> None:
             if not os.path.exists(os.path.dirname(target_file)):
                 os.makedirs(os.path.dirname(target_file))
             shutil.copy2(source_file, target_file)
+        # generating input for performance evaluation
+        random.shuffle(test_all_file)
+        eval_data = test_all_file[:num_eval]
+        eval_input = []
+        tokenizer = RegexpTokenizer(r'\w+')
+        for path_eval_data in eval_data:
+            encoding = get_encoding_of_file(path_eval_data)
+            with open(path_eval_data, 'r', encoding=encoding) as file:
+                data = file.read()
+            que = tokenizer.tokenize(data)[:max_que_len]
+            eval_input.append(' '.join(que))
+        with open(f'Data/{data_name}-test/eval_input.json', 'w', encoding='utf-8') as file:
+            file.write(json.dumps(eval_input))
 
 
 def construct_retrieval_database(data_name_list: List[str],
@@ -438,9 +468,9 @@ if __name__ == '__main__':
     if dataset_name.find('strip') != -1 and not os.path.exists('Data/enron-mail-strip'):
         pre_process_dataset('enron-mail', 'strip')
     if dataset_name.find('train') != -1 and not os.path.exists(f'Data/{dataset_name}'):
-        split_dataset(dataset_name)
+        split_dataset(dataset_name[:-6])
     if dataset_name.find('test') != -1 and not os.path.exists(f'Data/{dataset_name}'):
-        split_dataset(dataset_name)
+        split_dataset(dataset_name[:-5])
     if flag_mix is True:
         if dataset_name.find('enron-mail') != -1:
             construct_retrieval_database([dataset_name, 'wikitext-103'],
