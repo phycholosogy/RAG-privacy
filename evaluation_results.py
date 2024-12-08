@@ -97,17 +97,17 @@ def get_data(path, ckpt_dir, temperature, top_p, max_seq_len, max_gen_len):
     if not os.path.exists(r_path):
         r_path = f"./Inputs&Outputs/{path}/question.json"
     with open(r_path, 'r', encoding='utf-8') as f:
-        outputs = f.read()
+        outputs = json.load(f)
     if not os.path.exists(r_path):
         outputs = len(outputs)
     with open(f'./Inputs&Outputs/{path}/context.json', 'r', encoding='utf-8') as f:
-        contexts = f.read()
+        contexts = json.load(f)
     with open(f'./Inputs&Outputs/{path}/sources.json', 'r', encoding='utf-8') as f:
-        sources = f.read()
+        sources = json.load(f)
     with open(f'./Inputs&Outputs/{path}/question.json', 'r', encoding='utf-8') as f:
-        question = f.read()
+        question = json.load(f)
     with open(f'./Inputs&Outputs/{path}/prompts.json', 'r', encoding='utf-8') as f:
-        prompts = f.read()
+        prompts = json.load(f)
     k = len(sources) // len(outputs)
     assert len(question) == len(outputs)
     assert len(question) == len(prompts)
@@ -205,12 +205,10 @@ def get_embedding(exp_name, output_path, embed_model, set_retrieval, get_random_
         label = new_all_infor[i].split('!')
         q_label, c_label = label[0], label[1].replace('-', '', 1)
         infor.append(q_label + '-' + c_label)
-        with open(f'Inputs&Outputs/{path}/question.txt', 'r', encoding='utf-8') as file:
-            data = file.read()
-        question = data.split('\n===================\n')[:-1]
-        with open(f'Inputs&Outputs/{path}/context.txt', 'r', encoding='utf-8') as file:
-            data = file.read()
-        context = data.split('\n===================\n')[:-1]
+        with open(f'Inputs&Outputs/{path}/question.json', 'r', encoding='utf-8') as file:
+            question = json.load(file)
+        with open(f'Inputs&Outputs/{path}/context.json', 'r', encoding='utf-8') as file:
+            context = json.load(file)
         que_embed = model.encode(question)
         con_embed = model.encode(context)
         data_dict = {
@@ -583,8 +581,8 @@ def eval_results(settings_, title_table_, table_list_, flag_print: bool = True):
     print('\t'.join(title_table_))
     i_ = 0
     # Draw the distribution of the contexts and questions
-    if eval_set['draw_flag']:
-        evaluate_embedding(settings_)
+    # if eval_set['draw_flag']:
+    #     evaluate_embedding(settings_)
     for path_ in settings_['output_path']:
         for model in settings_['LLM']['LLM model']:
             for tem in settings_['LLM']['temperature']:
