@@ -93,26 +93,21 @@ def get_change_items(output_dir: str, flag_print: bool = True):
 
 def get_data(path, ckpt_dir, temperature, top_p, max_seq_len, max_gen_len):
     # if output not exist, return is question
-    r_path = f"./Inputs&Outputs/{path}/outputs-{ckpt_dir}-{temperature}-{top_p}-{max_seq_len}-{max_gen_len}.txt"
+    r_path = f"./Inputs&Outputs/{path}/outputs-{ckpt_dir}-{temperature}-{top_p}-{max_seq_len}-{max_gen_len}.json"
     if not os.path.exists(r_path):
-        r_path = f"./Inputs&Outputs/{path}/question.txt"
+        r_path = f"./Inputs&Outputs/{path}/question.json"
     with open(r_path, 'r', encoding='utf-8') as f:
-        output = f.read()
-    outputs = output.split('\n===================\n')[:-1]
+        outputs = f.read()
     if not os.path.exists(r_path):
         outputs = len(outputs)
-    with open(f'./Inputs&Outputs/{path}/context.txt', 'r', encoding='utf-8') as f:
-        _contexts = f.read()
-    contexts = _contexts.split('\n===================\n')[:-1]
-    with open(f'./Inputs&Outputs/{path}/sources.txt', 'r', encoding='utf-8') as f:
-        _sources = f.read()
-    sources = _sources.split('\n===================\n')[:-1]
-    with open(f'./Inputs&Outputs/{path}/question.txt', 'r', encoding='utf-8') as f:
-        _question = f.read()
-    question = _question.split('\n===================\n')[:-1]
-    with open(f'./Inputs&Outputs/{path}/prompts.txt', 'r', encoding='utf-8') as f:
-        _prompt = f.read()
-    prompts = _prompt.split('\n===================\n')[:-1]
+    with open(f'./Inputs&Outputs/{path}/context.json', 'r', encoding='utf-8') as f:
+        contexts = f.read()
+    with open(f'./Inputs&Outputs/{path}/sources.json', 'r', encoding='utf-8') as f:
+        sources = f.read()
+    with open(f'./Inputs&Outputs/{path}/question.json', 'r', encoding='utf-8') as f:
+        question = f.read()
+    with open(f'./Inputs&Outputs/{path}/prompts.json', 'r', encoding='utf-8') as f:
+        prompts = f.read()
     k = len(sources) // len(outputs)
     assert len(question) == len(outputs)
     assert len(question) == len(prompts)
@@ -652,80 +647,6 @@ if __name__ == '__main__':
         --rouge_list: a list of what content to print as a table
         --retrieval_list: a list of what content to print as a table
         --draw_flag: whether to draw the distribution of the questions and contexts
-    :example
-        test chatdoctor:
-            python evaluation_results.py
-            --exp_name chat-1-summary --evaluate_content retrieval untarget --draw_flag True
-            --repeat_list "repeat effect prompt%" "repeat extract context%" "average extract length" "true disease"
-            python evaluation_results.py
-            --exp_name chat-2-embedding --evaluate_content retrieval untarget --draw_flag True
-            --repeat_list "repeat effect prompt%" "repeat extract context%" "average extract length" "true disease"
-            python evaluation_results.py
-            --exp_name chat-3-rerank --evaluate_content retrieval untarget --draw_flag True
-            --repeat_list "repeat effect prompt%" "repeat extract context%" "average extract length" "true disease"
-            python evaluation_results.py
-            --exp_name chat-4-method --evaluate_content retrieval untarget --draw_flag True
-            --repeat_list "repeat effect prompt%" "repeat extract context%" "average extract length" "true disease"
-            
-        enron mail
-            python evaluation_results.py
-            --exp_name enron-1-summary --draw_flag True --retrieval_list "retrieval private contexts%" "public context%"
-            --target_list "extract context%" "effective prompt%" "retrieval context pii%-email" "num pii-email" 
-            "retrieval context pii%-phone" "num pii-phone" "retrieval context pii%-url" "num pii-url" 
-            "retrieval context pii%-all" "num pii-all"
-
-            --exp_name enron-2-embedding --draw_flag True
-            --retrieval_list "retrieval private contexts%" "public context%"
-            --target_list "extract context%" "effective prompt%" "retrieval context pii%-email" "num pii-email" 
-            "retrieval context pii%-phone" "num pii-phone" "retrieval context pii%-url" "num pii-url" 
-            "retrieval context pii%-all" "num pii-all"
-            
-            --exp_name enron-3-rerank --draw_flag True
-            --retrieval_list "retrieval private contexts%" "public context%"
-            --target_list "extract context%" "effective prompt%" "retrieval context pii%-email" "num pii-email" 
-            "retrieval context pii%-phone" "num pii-phone" "retrieval context pii%-url" "num pii-url" 
-            "retrieval context pii%-all" "num pii-all"
-            
-            --exp_name enron-4-method --draw_flag True
-            --retrieval_list "retrieval private contexts%" "public context%"
-            --target_list "extract context%" "effective prompt%" "retrieval context pii%-email" "num pii-email" 
-            "retrieval context pii%-phone" "num pii-phone" "retrieval context pii%-url" "num pii-url" 
-            "retrieval context pii%-all" "num pii-all"
-            
-            --exp_name enron-5-target --draw_flag True
-            --retrieval_list "retrieval private contexts%" "public context%"
-            --target_list "extract context%" "effective prompt%" "retrieval context pii%-email" "num pii-email" 
-            "retrieval context pii%-phone" "num pii-phone" "retrieval context pii%-url" "num pii-url" 
-            "retrieval context pii%-all" "num pii-all"
-            
-        新配置:
-            --exp_name chat-6-k --evaluate_content retrieval untarget
-            --repeat_list "repeat effect prompt%" "repeat extract context%" "average extract length" "true disease"
-            
-            --exp_name chat-7-tem --evaluate_content retrieval untarget
-            --repeat_list "repeat effect prompt%" "repeat extract context%" "average extract length" "true disease"
-            
-            --exp_name enron-7-k
-            --retrieval_list "retrieval private contexts%" "public context%"
-            --target_list "extract context%" "effective prompt%" "retrieval context pii%-email" "num pii-email" 
-            "retrieval context pii%-phone" "num pii-phone" "retrieval context pii%-url" "num pii-url" 
-            "retrieval context pii%-all" "num pii-all"
-            
-            --exp_name enron-8-tem
-            --retrieval_list "retrieval private contexts%" "public context%"
-            --target_list "extract context%" "effective prompt%" "retrieval context pii%-email" "num pii-email" 
-            "retrieval context pii%-phone" "num pii-phone" "retrieval context pii%-url" "num pii-url" 
-            "retrieval context pii%-all" "num pii-all"
-        最新配置：
-            --exp_name enron-4-method
-            --retrieval_list "retrieval private contexts%"
-            --target_list "num pii-all"
-            
-            --exp_name chat-4-method --evaluate_content retrieval untarget
-            --repeat_list "repeat effect prompt%" "repeat extract context%" "average extract length" "true disease"
-            
-            chat-6-k
-            
     """
     print(f'evaluating {args.exp_name} ...')
     settings, title_table, table_list = get_change_items(args.exp_name, False)
